@@ -21,6 +21,9 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'com.google.apis:google-api-services-youtube:v3-rev20210915-1.32.1'
+	implementation 'org.seleniumhq.selenium:selenium-java:4.6.0'
+	implementation 'io.github.bonigarcia:webdrivermanager:5.3.1'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	annotationProcessor 'org.projectlombok:lombok'
