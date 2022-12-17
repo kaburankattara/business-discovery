@@ -36,6 +36,6 @@ public class RankingService {
     }
 
     public void init3() {
-        scrapingService.request("");
+        scrapingService.request("食");
     }
 }
