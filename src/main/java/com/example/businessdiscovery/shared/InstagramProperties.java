@@ -15,6 +15,8 @@ public class InstagramProperties {
 
     private static final String APP_ID = "app.id";
     private static final String APP_SECRET = "app.secret";
+    private static final String EMAIL_ADDRESS = "email-address";
+    private static final String PASSWORD = "password";
 
     public String getAppId() {
         return getProperty(APP_ID);
@@ -22,6 +24,14 @@ public class InstagramProperties {
 
     public String getAppSecret() {
         return getProperty(APP_SECRET);
+    }
+
+    public String getEmailAddress() {
+        return getProperty(EMAIL_ADDRESS);
+    }
+
+    public String getPassword() {
+        return getProperty(PASSWORD);
     }
 
     private String getProperty(String key) {
