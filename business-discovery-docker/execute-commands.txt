@@ -1,0 +1,4 @@
+cd ~/workspace/business-discovery/business-discovery-docker/
+
+docker-compose -f docker-compose.yml up --build -d
+
