@@ -1,0 +1,35 @@
+version: "3"
+
+networks:
+  some-network:
+
+services:
+  app:
+    build: ./build
+    container_name: app
+    networks:
+      - some-network
+    ports:
+      - 8080:80
+    privileged: true
+    environment:
+      JAVA_HOME: /usr/local/java
+      PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/java/bin
+    volumes:
+      - ./volumes/opt:/opt
+      - ./volumes/tmp:/tmp
+      - ../build:/opt/java
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    working_dir: /root
+    entrypoint: >
+      bash -c "
+        sh /tmp/container-init.sh &&
+        tail -f /dev/null
+      "
+
+  cassandra:
+    image: cassandra:latest
+    container_name: cassandra
+    networks:
+      - some-network
+    restart: always
