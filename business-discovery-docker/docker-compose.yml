@@ -19,8 +19,8 @@ services:
       JAVA_HOME: /usr/local/java
       PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/java/bin
     volumes:
-      - ./volumes/opt:/opt
-      - ./volumes/tmp:/tmp
+      - ./volumes/app/opt:/opt
+      - ./volumes/app/tmp:/tmp
       - ../build:/opt/java
       - /sys/fs/cgroup:/sys/fs/cgroup:rw
     working_dir: /root
@@ -55,3 +55,21 @@ services:
     volumes:
       - ./volumes/cassandra2/datadir:/var/lib/cassandra
     restart: always
+
+  cassandra-for-setup:
+    image: cassandra:latest
+    container_name: cassandra-for-setup
+    depends_on:
+      - cassandra1
+      - cassandra2
+    networks:
+      - some-network
+    volumes:
+      - ./volumes/cassandra-for-setup/tmp:/tmp
+    working_dir: /root
+    restart: always
+    entrypoint: >
+      bash -c "
+        sh /tmp/container-init.sh &&
+        tail -f /dev/null
+      "
