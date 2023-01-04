@@ -117,6 +117,8 @@ public class Videos {
 
         while (iteratorSearchResults.hasNext()) {
 
+            com.example.businessdiscovery.domain.youtubeDataApi.Video video = new com.example.businessdiscovery.domain.youtubeDataApi.Video();
+            video.getTitle();
             Video singleVideo = iteratorSearchResults.next();
             System.out.println("\n-------------------------------------------------------------\n");
 
