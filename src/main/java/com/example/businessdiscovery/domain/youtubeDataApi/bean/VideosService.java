@@ -1,5 +1,6 @@
 package com.example.businessdiscovery.domain.youtubeDataApi.bean;
 
+import com.example.businessdiscovery.domain.youtubeDataApi.Videos;
 import com.example.businessdiscovery.shared.YoutubeProperties;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpRequest;
@@ -11,18 +12,15 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.Video;
 import com.google.api.services.youtube.model.VideoListResponse;
-import com.google.api.services.youtube.model.VideoSnippet;
-import com.google.api.services.youtube.model.VideoStatistics;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
  * 検索語に基づいてビデオのリストを出力します。
  */
-public class Videos {
+public class VideosService {
 
     /** HTTP トランスポートのグローバル インスタンス。 */
     private static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
@@ -42,7 +40,7 @@ public class Videos {
      *
      * @param searchVideoId command line args.
      */
-    public void main(String searchVideoId) {
+    public Videos main(String searchVideoId) {
 
         YoutubeProperties properties = YoutubeProperties.createInstance();
 
@@ -88,58 +86,23 @@ public class Videos {
 
             List<Video> searchResultList = videoResponse.getItems();
 
-            if (searchResultList != null) {
-                prettyPrint(searchResultList.iterator(), searchVideoId);
+            if (searchResultList == null) {
+                return Videos.createEmptyInstance();
             }
+
+            Videos.prettyPrint(NUMBER_OF_VIDEOS_RETURNED, searchResultList.iterator(), searchVideoId);
+            return Videos.createInstanceBySearchResultIteratorList(searchResultList);
+
         } catch (GoogleJsonResponseException e) {
             System.err.println("There was a service error: " + e.getDetails().getCode() + " : "
                     + e.getDetails().getMessage());
+            throw new RuntimeException(e);
         } catch (IOException e) {
             System.err.println("There was an IO error: " + e.getCause() + " : " + e.getMessage());
+            throw new RuntimeException(e);
         } catch (Throwable t) {
             t.printStackTrace();
-        }
-    }
-
-    /*
-     * Iterator 内のすべての SearchResults を出力します。 印刷された各行には、タイトル、ID、およびサムネイルが含まれます。
-     */
-    private static void prettyPrint(Iterator<Video> iteratorSearchResults, String query) {
-
-        System.out.println("\n=============================================================");
-        System.out.println(
-                "   First " + NUMBER_OF_VIDEOS_RETURNED + " videos for search on \"" + query + "\".");
-        System.out.println("=============================================================\n");
-
-        if (!iteratorSearchResults.hasNext()) {
-            System.out.println(" There aren't any results for your query.");
-        }
-
-        while (iteratorSearchResults.hasNext()) {
-
-            com.example.businessdiscovery.domain.youtubeDataApi.Video video = new com.example.businessdiscovery.domain.youtubeDataApi.Video();
-            video.getTitle();
-            Video singleVideo = iteratorSearchResults.next();
-            System.out.println("\n-------------------------------------------------------------\n");
-
-            // メイン情報
-            System.out.println(" 動画を一意に識別するID:" + singleVideo.getId());
-
-            // スニペットからの情報
-            VideoSnippet snippet = singleVideo.getSnippet();
-            System.out.println(" 動画のタイトル:" + snippet.getTitle());
-            System.out.println(" 動画のチャンネルを一意に識別するID:" + snippet.getChannelId());
-            System.out.println(" 動画が属するチャンネルタイトル:" + snippet.getChannelTitle());
-            System.out.println(" Default Audio Language:" + snippet.getDefaultAudioLanguage());
-            System.out.println(" 動画のアップロード日時:" + snippet.getPublishedAt());
-
-            // 統計情報
-            VideoStatistics statistics = singleVideo.getStatistics();
-            System.out.println(" コメント数:" + statistics.getCommentCount());
-            System.out.println(" 動画をお気に入りに登録しているユーザーの数:" + statistics.getFavoriteCount());
-            System.out.println(" 動画を高く評価したユーザーの数:" + statistics.getLikeCount());
-            System.out.println(" 動画を低く評価したユーザーの数:" + statistics.getDislikeCount());
-            System.out.println(" 動画が再生された回数:" + statistics.getViewCount());
+            throw new RuntimeException(t);
         }
     }
 }
