@@ -36,3 +36,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Project ###
+business-discovery-docker/volumes/cassandra1/datadir
+business-discovery-docker/volumes/cassandra2/datadir
