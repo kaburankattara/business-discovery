@@ -1,13 +1,13 @@
 -- キースペースを作成
-DROP KEYSPACE IF EXISTS keyspace_name;
-CREATE KEYSPACE keyspace_name
+DROP KEYSPACE IF EXISTS business_discovery;
+CREATE KEYSPACE business_discovery
  WITH REPLICATION = {
   'class' : 'NetworkTopologyStrategy',
   'datacenter1' : 1
  } ;
 
 -- 作成したキースペースを選択
-use keyspace_name;
+use business_discovery;
 
 -- カラムファミリを作成
 DROP COLUMNFAMILY IF EXISTS video;
