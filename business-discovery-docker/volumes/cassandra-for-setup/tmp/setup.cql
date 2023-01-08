@@ -13,7 +13,8 @@ use business_discovery;
 DROP COLUMNFAMILY IF EXISTS video;
 CREATE COLUMNFAMILY video
 (
-  Id VARCHAR PRIMARY KEY
+  id UUID PRIMARY KEY
+  ,videoId VARCHAR
   ,Title VARCHAR
   ,ChannelId VARCHAR
   ,ChannelTitle VARCHAR
@@ -24,4 +25,14 @@ CREATE COLUMNFAMILY video
   ,LikeCount varint
   ,DislikeCount varint
   ,ViewCount varint
+);
+
+DROP COLUMNFAMILY IF EXISTS search_result;
+CREATE COLUMNFAMILY search_result
+(
+  id UUID PRIMARY KEY
+  ,channelId VARCHAR
+  ,videoId VARCHAR
+  ,title VARCHAR
+  ,thumbnailUrl VARCHAR
 );

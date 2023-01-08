@@ -1,5 +1,6 @@
 package com.example.businessdiscovery.domain.youtubeDataApi.bean;
 
+import com.example.businessdiscovery.domain.youtubeDataApi.Videos;
 import com.example.businessdiscovery.shared.YoutubeProperties;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpRequest;
@@ -9,20 +10,17 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.youtube.YouTube;
-import com.google.api.services.youtube.model.ResourceId;
-import com.google.api.services.youtube.model.SearchListResponse;
-import com.google.api.services.youtube.model.SearchResult;
-import com.google.api.services.youtube.model.Thumbnail;
+import com.google.api.services.youtube.model.Video;
+import com.google.api.services.youtube.model.VideoListResponse;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
  * 検索語に基づいてビデオのリストを出力します。
  */
-public class Search {
+public class VideoService {
 
     /** HTTP トランスポートのグローバル インスタンス。 */
     private static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
@@ -40,10 +38,10 @@ public class Search {
      * YouTube オブジェクトを初期化して、YouTube で動画を検索します (Youtube.Search.List)。 プログラム
      * 次に、各ビデオの名前とサムネイルを出力します (最初の 50 個のビデオのみ)。
      *
-     * @param searchKeyword command line args.
+     * @param searchVideoId command line args.
      */
-    public void main(String searchKeyword) {
-        // Read the developer key from youtube.properties
+    public Videos main(String searchVideoId) {
+
         YoutubeProperties properties = YoutubeProperties.createInstance();
 
         try {
@@ -54,23 +52,23 @@ public class Search {
              */
             youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, new HttpRequestInitializer() {
                 public void initialize(HttpRequest request) throws IOException {}
-            }).setApplicationName("youtube-cmdline-search-sample").build();
-
-            // ユーザーからクエリ用語を取得します
-            String queryTerm = searchKeyword;
+            }).setApplicationName("youtube-cmdline-videos-sample").build();
 
             List<String> part = new ArrayList<>();
             part.add("id");
             part.add("snippet");
-            YouTube.Search.List search = youtube.search().list(part);
+            part.add("statistics");
+            YouTube.Videos.List videos = youtube.videos().list(part);
             /*
              * Google Developer Console から API キーを設定することが重要です。
              * 認証されていないリクエスト (次のリンクの [認証情報] タブにあります:
              * console.developers.google.com/)。 これは良い習慣であり、クォータを増やしました。
              */
             String apiKey = properties.getYoutubeApikey();
-            search.setKey(apiKey);
-            search.setQ(queryTerm);
+            videos.setKey(apiKey);
+            List<String> videoIdList = new ArrayList<>();
+            videoIdList.add(searchVideoId);
+            videos.setId(videoIdList);
             /*
              * 動画のみを検索しています (プレイリストやチャンネルは検索していません)。 もし私たちが探していたら
              * さらに、"video,playlist,channel" のような文字列として追加します。
@@ -82,54 +80,29 @@ public class Search {
             /*
              * このメソッドは、返される情報を必要なフィールドのみに減らし、呼び出しをより効率的にします。
              */
-            search.setFields("items(id/kind,id/videoId,snippet/title,snippet/thumbnails/default/url)");
-            search.setMaxResults(NUMBER_OF_VIDEOS_RETURNED);
-            SearchListResponse searchResponse = search.execute();
+//            videos.setFields("items(id/kind,id/videoId,snippet/title,snippet/thumbnails/default/url)");
+            videos.setMaxResults(NUMBER_OF_VIDEOS_RETURNED);
+            VideoListResponse videoResponse = videos.execute();
 
-            List<SearchResult> searchResultList = searchResponse.getItems();
+            List<Video> searchResultList = videoResponse.getItems();
 
-            if (searchResultList != null) {
-                prettyPrint(searchResultList.iterator(), queryTerm);
+            if (searchResultList == null) {
+                return Videos.createEmptyInstance();
             }
+
+            Videos.prettyPrint(NUMBER_OF_VIDEOS_RETURNED, searchResultList.iterator(), searchVideoId);
+            return Videos.createInstanceBySearchResultIteratorList(searchResultList);
+
         } catch (GoogleJsonResponseException e) {
             System.err.println("There was a service error: " + e.getDetails().getCode() + " : "
                     + e.getDetails().getMessage());
+            throw new RuntimeException(e);
         } catch (IOException e) {
             System.err.println("There was an IO error: " + e.getCause() + " : " + e.getMessage());
+            throw new RuntimeException(e);
         } catch (Throwable t) {
             t.printStackTrace();
-        }
-    }
-
-    /*
-     * Iterator 内のすべての SearchResults を出力します。 印刷された各行には、タイトル、ID、およびサムネイルが含まれます。
-     */
-    private static void prettyPrint(Iterator<SearchResult> iteratorSearchResults, String query) {
-
-        System.out.println("\n=============================================================");
-        System.out.println(
-                "   First " + NUMBER_OF_VIDEOS_RETURNED + " videos for search on \"" + query + "\".");
-        System.out.println("=============================================================\n");
-
-        if (!iteratorSearchResults.hasNext()) {
-            System.out.println(" There aren't any results for your query.");
-        }
-
-        while (iteratorSearchResults.hasNext()) {
-
-            SearchResult singleVideo = iteratorSearchResults.next();
-            ResourceId rId = singleVideo.getId();
-
-            // 種類がビデオであることを再確認します。
-            if (rId.getKind().equals("youtube#video")) {
-                Thumbnail thumbnail = (Thumbnail)singleVideo.getSnippet().getThumbnails().get("default");
-
-                System.out.println(" channel Id:" + singleVideo.getSnippet().getChannelId());
-                System.out.println(" Video Id:" + rId.getVideoId());
-                System.out.println(" Title: " + singleVideo.getSnippet().getTitle());
-                System.out.println(" Thumbnail: " + thumbnail.getUrl());
-                System.out.println("\n-------------------------------------------------------------\n");
-            }
+            throw new RuntimeException(t);
         }
     }
 }
