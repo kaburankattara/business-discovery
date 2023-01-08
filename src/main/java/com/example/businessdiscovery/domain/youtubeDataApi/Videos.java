@@ -39,7 +39,6 @@ public class Videos {
     public Videos() {
     }
 
-    // 動画を一意に識別するID
     @Getter
     private List<Video> videoList = new ArrayList<>();
 

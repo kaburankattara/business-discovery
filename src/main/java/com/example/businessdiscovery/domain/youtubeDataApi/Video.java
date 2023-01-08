@@ -1,5 +1,6 @@
 package com.example.businessdiscovery.domain.youtubeDataApi;
 
+import com.example.businessdiscovery.infra.cassandra.video.VideoEntity;
 import com.google.api.services.youtube.model.VideoSnippet;
 import com.google.api.services.youtube.model.VideoStatistics;
 import lombok.Getter;
@@ -81,8 +82,8 @@ public class Video {
     @Getter
     private BigInteger viewCount;
 
-    public com.example.businessdiscovery.infra.cassandra.video.Video toEntity() {
-        return new com.example.businessdiscovery.infra.cassandra.video.Video(id, title, channelId, channelTitle,
+    public VideoEntity toEntity() {
+        return new VideoEntity(id, title, channelId, channelTitle,
                 defaultAudioLanguage, publishedAt, commentCount, favoriteCount, likeCount, dislikeCount,viewCount);
     }
 }

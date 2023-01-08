@@ -6,18 +6,18 @@ import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
 
 import java.math.BigInteger;
+import java.util.UUID;
 
-@Table
+@Table("video")
 @Getter
 @Setter
-public class Video {
+public class VideoEntity {
 
-//    @PrimaryKey
-//    private UUID id;
+    @PrimaryKey
+    private UUID id;
 
     // 動画を一意に識別するID
-    @PrimaryKey
-    private String id;
+    private String videoId;
 
     // 動画のタイトル
     private String title;
@@ -50,10 +50,11 @@ public class Video {
     // 動画が再生された回数
     private BigInteger viewCount;
 
-    public Video(String id, String title, String channelId, String channelTitle, String defaultAudioLanguage,
-                 String publishedAt, BigInteger commentCount, BigInteger favoriteCount, BigInteger likeCount,
-                 BigInteger dislikeCount, BigInteger viewCount) {
-        this.id = id;
+    public VideoEntity(String videoId, String title, String channelId, String channelTitle, String defaultAudioLanguage,
+                       String publishedAt, BigInteger commentCount, BigInteger favoriteCount, BigInteger likeCount,
+                       BigInteger dislikeCount, BigInteger viewCount) {
+        this.id = UUID.randomUUID();
+        this.videoId = videoId;
         this.title = title;
         this.channelId = channelId;
         this.channelTitle = channelTitle;

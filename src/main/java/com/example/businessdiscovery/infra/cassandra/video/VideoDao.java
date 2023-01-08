@@ -3,6 +3,8 @@ package com.example.businessdiscovery.infra.cassandra.video;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 public class VideoDao {
 
@@ -13,11 +15,11 @@ public class VideoDao {
         this.repository = repository;
     }
 
-    public Video findById(String id) {
-        return repository.findById(id).get();
+    public VideoEntity findById(UUID uuid) {
+        return repository.findById(uuid).get();
     }
 
-    public void save(Video video) {
+    public void save(VideoEntity video) {
         repository.save(video);
     }
 }
