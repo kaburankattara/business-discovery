@@ -38,5 +38,6 @@ out/
 .vscode/
 
 ### Project ###
-business-discovery-docker/volumes/cassandra1/datadir
-business-discovery-docker/volumes/cassandra2/datadir
+docker/volumes/mysql/datadir
+docker/volumes/cassandra1/datadir
+docker/volumes/cassandra2/datadir

@@ -1,4 +1,4 @@
 cd ~/workspace/business-discovery/business-discovery-docker/
-
+ ./docker-cleanup.sh
 docker-compose -f docker-compose.yml up --build -d
 

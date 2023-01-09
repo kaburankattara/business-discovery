@@ -4,31 +4,42 @@ networks:
   some-network:
 
 services:
-  app:
-    build: ./build
-    container_name: app
-    depends_on:
-      - cassandra1
-      - cassandra2
-    networks:
-      - some-network
+#  app:
+#    build: ./build
+#    container_name: app
+#    depends_on:
+#      - cassandra1
+#      - cassandra2
+#    networks:
+#      - some-network
+#    ports:
+#      - 8080:80
+#    privileged: true
+#    environment:
+#      JAVA_HOME: /usr/local/java
+#      PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/java/bin
+#    volumes:
+#      - ./volumes/app/opt:/opt
+#      - ./volumes/app/tmp:/tmp
+#      - ../build:/opt/java
+#      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+#    working_dir: /root
+#    entrypoint: >
+#      bash -c "
+#        sh /tmp/container-init.sh &&
+#        tail -f /dev/null
+#      "
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
     ports:
-      - 8080:80
-    privileged: true
+      - "3306:3306"
     environment:
-      JAVA_HOME: /usr/local/java
-      PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/java/bin
+      - MYSQL_ROOT_PASSWORD=my-secret-pw
     volumes:
-      - ./volumes/app/opt:/opt
-      - ./volumes/app/tmp:/tmp
-      - ../build:/opt/java
-      - /sys/fs/cgroup:/sys/fs/cgroup:rw
-    working_dir: /root
-    entrypoint: >
-      bash -c "
-        sh /tmp/container-init.sh &&
-        tail -f /dev/null
-      "
+      - ./volumes/mysql/datadir:/var/lib/mysql
+      - ./volumes/mysql/initdb.d:/docker-entrypoint-initdb.d
 
   cassandra1:
     image: cassandra:latest
