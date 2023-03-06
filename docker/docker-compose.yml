@@ -84,3 +84,4 @@ services:
         sh /tmp/container-init.sh &&
         tail -f /dev/null
       "
+
